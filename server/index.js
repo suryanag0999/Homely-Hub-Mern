@@ -9,7 +9,23 @@ import { bookingRouter } from "./routes/bookingRouter.js";
 
 dotenv.config();
 const app = express();
-app.use(cors({origin:process.env.ORIGIN_ACCESSS_URL,credentials:true}));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://homely-hub-mern.netlify.app"
+];
+
+// ✅ CORS Configuration
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, or Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+}));
 app.use(express.urlencoded({limit:"100mb", extended: true }));
 app.use(cookieParser());
 app.use(express.json({limit:"100mb"}));
